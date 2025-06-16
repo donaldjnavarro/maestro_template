@@ -31,15 +31,15 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      - name: Start emulator
-        uses: reactivecircus/android-emulator-runner@v2
+      - name: Launch emulator
+        uses: ReactiveCircus/android-emulator-runner@v2
         with:
           api-level: 30
           target: google_apis
           arch: x86_64
           profile: pixel
           disable-animations: true
-          emulator-options: "-no-window -noaudio -no-boot-anim -gpu swiftshader_indirect"
+          emulator-options: -no-window -noaudio -no-boot-anim -gpu swiftshader_indirect -accel off
           script: echo "Emulator started"
 
       - name: Run Maestro tests
