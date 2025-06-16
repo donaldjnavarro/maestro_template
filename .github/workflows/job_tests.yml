@@ -40,7 +40,20 @@ jobs:
           profile: pixel
           emulator-options: "-no-window -noaudio -no-boot-anim -gpu off -no-snapshot"
           disable-animations: true
-          script: adb shell getprop sys.boot_completed
+          script: |
+            boot_completed=""
+            attempts=0
+            until [[ "$boot_completed" == "1" || $attempts -ge 30 ]]; do
+              sleep 10
+              boot_completed=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+              echo "sys.boot_completed=$boot_completed"
+              attempts=$((attempts + 1))
+            done
+            if [[ "$boot_completed" != "1" ]]; then
+              echo "Emulator failed to boot"
+              exit 1
+            fi
+
 
       - name: Run Maestro tests
         run: |
