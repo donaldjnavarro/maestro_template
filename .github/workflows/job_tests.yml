@@ -31,7 +31,7 @@ jobs:
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
 
-      - name: Start emulator and run Maestro
+      - name: Start emulator
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 30
@@ -40,9 +40,10 @@ jobs:
           profile: pixel
           disable-animations: true
           emulator-options: "-no-window -noaudio -no-boot-anim -gpu swiftshader_indirect"
-          script: |
-            # Install app
-            adb install samples\wikipedia.apk
+          script: echo "Emulator started"
 
-            # Run Maestro tests
-            maestro test samples\android-advanced-flow.yaml
+      - name: Run Maestro tests
+        run: |
+          adb devices
+          adb install samples/wikipedia.apk
+          maestro test samples/android-advanced-flow.yaml
