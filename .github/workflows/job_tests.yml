@@ -1,0 +1,46 @@
+name: Maestro tests
+
+on:
+  workflow_call:
+    inputs:
+      env_file:
+        required: false
+        type: string
+
+jobs:
+  test:
+    # Run on any branch during PR workflows, otherwise only run on main
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Create AVD and start emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          target: google_apis
+          arch: x86_64
+          profile: pixel
+          script: |
+            # Install your app
+            adb install ./samples/wikipedia.apk
+
+            # Run Maestro test
+            maestro test ./samples/android-advanced-flow.yaml
