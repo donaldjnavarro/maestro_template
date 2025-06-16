@@ -9,10 +9,9 @@ on:
 
 jobs:
   test:
-    # Run on any branch during PR workflows, otherwise only run on main
     if: github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
 
     steps:
       - name: Checkout code
@@ -45,9 +44,9 @@ jobs:
             # Wait until boot is complete
             adb wait-for-device
             boot_completed=""
-            until [[ "$boot_completed" == "1" ]]; do
+            until [ "$boot_completed" = "1" ]; do
               boot_completed=$(adb shell getprop sys.boot_completed | tr -d '\r')
-              echo "Waiting for emulator... ($boot_completed)"
+              echo "Waiting for emulator... (boot_completed=$boot_completed)"
               sleep 5
             done
 
